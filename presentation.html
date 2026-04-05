@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentAI Studio — Présentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Silkscreen&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --border:rgba(255,255,255,0.15);
+  --border2:rgba(255,255,255,0.25);
+  --text:#ffffff;
+  --muted:rgba(255,255,255,0.5);
+  --muted2:rgba(255,255,255,0.7);
+  --accent:#ffffff;
+  --fd:'Inter', sans-serif;
+  --fb:'Inter', sans-serif;
+  --glass-bg: rgba(20, 20, 20, 0.5);
+}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  font-family:var(--fb);color:var(--text);
+  background: #000;
+  position: relative;
+  z-index: 0;
+}
+body::before {
+  content: '';
+  position: absolute;
+  top: -5%; left: -5%; width: 110%; height: 110%;
+  background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=3270&ixlib=rb-4.0.3');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: blur(3px) brightness(0.65);
+  z-index: -2;
+}
+body::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.12"/%3E%3C/svg%3E');
+  z-index: -1;
+  pointer-events: none;
+}
+.deck{display:flex;width:100vw;height:100vh;transition:transform 0.9s cubic-bezier(0.77,0,0.18,1);will-change:transform;}
+.slide{flex:0 0 100vw;width:100vw;height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:64px 80px;}
+
+/* Nav updated to pill glass */
+.nav{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;z-index:99;
+  background:rgba(10,10,10,0.6) !important;backdrop-filter:blur(24px) !important;-webkit-backdrop-filter:blur(24px) !important;
+  border:1px solid rgba(255,255,255,0.15) !important;border-radius:100px !important;padding:12px 24px !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+}
+.ndot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.3s;border:none;}
+.ndot.on{background:var(--accent);transform:scale(1.4);box-shadow: 0 0 10px var(--accent);}
+.nbtn{background:none;border:none;color:var(--text);cursor:pointer;font-size:16px;padding:2px 8px;transition:color 0.2s;font-family:var(--fb);font-weight:600;}
+.nbtn:hover{color:var(--text);}
+.nsep{width:1px;height:14px;background:var(--border2);}
+.ncount{font-size:12px;color:var(--muted);min-width:36px;text-align:center;font-family:var(--fd);font-weight:600;}
+.hint{position:fixed;bottom:78px;right:36px;display:flex;gap:6px;align-items:center;}
+.kbd{border:1px solid var(--border);border-radius:8px;padding:2px 8px;font-size:10px;color:var(--text);background:var(--glass-bg);backdrop-filter:blur(10px);}
+.logo-fixed{position:absolute;top:36px;left:48px;font-family:var(--fd);font-size:15px;font-weight:700;letter-spacing:-0.03em;color:var(--text);backdrop-filter:blur(10px);padding:8px 16px;border-radius:100px;background:rgba(20,20,20,0.6);border:1px solid rgba(255,255,255,0.15);}
+.logo-fixed span{color:var(--accent);}
+.snum{position:absolute;top:36px;right:48px;font-family:var(--fd);font-size:11px;font-weight:700;color:var(--text);letter-spacing:0.06em;backdrop-filter:blur(10px);padding:8px 16px;border-radius:100px;background:rgba(20,20,20,0.6);border:1px solid rgba(255,255,255,0.15);}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+.eyebrow::before{content:'';width:22px;height:2px;background:var(--accent);}
+
+/* Overrides for hardcoded colors in HTML inline styles */
+.assoc-dot { background: var(--accent) !important; box-shadow: 0 0 8px var(--accent) !important; }
+.ba-wow, .acard-wow, .wow-box {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important; 
+}
+.acard-wow, .ba-wow { border: none !important; border-top: 1px solid var(--border) !important; }
+
+h1, h2{color:#ffffff; font-weight:700;}
+h1{font-family:var(--fd);font-size:clamp(52px,6.5vw,90px);letter-spacing:-0.04em;line-height:1;}
+h2{font-family:var(--fd);font-size:clamp(36px,4.5vw,60px);letter-spacing:-0.03em;line-height:1.05;}
+.lead{font-size:clamp(15px,1.5vw,19px);color:var(--muted2);font-weight:400;line-height:1.75;max-width:580px;margin-top:16px;}
+.accent{color:var(--accent);}
+.sc{opacity:0;transform:translateY(22px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.slide.on .sc{opacity:1;transform:translateY(0);}
+.slide.on .sc.d1{transition-delay:0.08s;}
+.slide.on .sc.d2{transition-delay:0.2s;}
+.slide.on .sc.d3{transition-delay:0.34s;}
+.slide.on .sc.d4{transition-delay:0.48s;}
+
+/* Glassmorphism Cards */
+.kpi, .s1-right, .wcard, .widget-box, .wow-box, .prompt-box, .big-agent, .acard, .tc, .pilot-c {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  border-radius: 24px !important;
+}
+
+/* Base styles and overrides */
+#s1::before, #s2::before, #s6::before, #s7::before, #s8::before{display:none;}
+.s1-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(255,255,255,0.15);padding:8px 20px;border-radius:100px;margin-bottom:28px;width:fit-content;background:rgba(20,20,20,0.6);backdrop-filter:blur(10px);}
+.s1-tag::before{display:none;} /* Remove blinking dot */
+.s1-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;width:100%;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.kpi{padding:24px 26px;}
+/* PIXEL FONT FIX FOR KPIS */
+.kpi-val{font-family:'Silkscreen', monospace !important;font-size:36px;font-weight:400;color:var(--accent);letter-spacing:0;line-height:1;}
+.kpi-label{font-size:14px;color:var(--text);margin-top:12px;font-weight:600;}
+.s1-right{padding:36px;}
+.s1-rl{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:20px;}
+.assoc-row{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--text);margin-bottom:12px;}
+
+.what-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;width:100%;}
+.what-right{display:flex;flex-direction:column;gap:16px;}
+.wcard{padding:26px 30px;position:relative;overflow:hidden;}
+.wcard::before{display:none;} /* Removing colored left borders */
+.wcard-icon{font-size:24px;margin-bottom:12px;}
+.wcard-title{font-family:var(--fd);font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em;color:#fff;}
+.wcard-desc{font-size:14px;color:var(--muted2);line-height:1.6;font-weight:400;}
+
+.agent-slide{display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center;width:100%;}
+.as-sector{display:inline-block;font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:8px 16px;border-radius:100px;margin-bottom:16px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);background:rgba(20,20,20,0.6);color:var(--text) !important;}
+.sec-health, .sec-rh, .sec-sav { color: var(--text) !important; background: rgba(20,20,20,0.6) !important; border: 1px solid rgba(255,255,255,0.15) !important; }
+.as-name{font-family:var(--fd);font-size:clamp(52px,6vw,80px);font-weight:700;letter-spacing:-0.04em;line-height:0.95;margin-bottom:10px;color:#fff;}
+.as-role{font-size:18px;color:var(--text);font-weight:600;margin-bottom:6px;}
+.as-co{font-size:15px;color:var(--muted2);margin-bottom:24px;font-weight:400;}
+.sc-label{font-size:12px;font-weight:600;color:var(--text);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:12px;}
+.sc-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;}
+.sc-dot{width:6px;height:6px;border-radius:100px;background:var(--accent);margin-top:7px;flex-shrink:0;}
+.sc-text{font-size:14px;color:var(--muted2);line-height:1.5;font-weight:400;}
+.as-right{display:flex;flex-direction:column;gap:16px;}
+.widget-box{padding:28px;display:flex;flex-direction:column;align-items:center;gap:12px; min-height: 180px;}
+.widget-label{font-size:12px;font-weight:600;color:var(--text);letter-spacing:0.06em;text-transform:uppercase;}
+.wow-box{padding:24px 28px;}
+.wow-title{font-size:12px;font-weight:600;color:var(--text) !important;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;}
+.wow-text{font-size:15px;color:var(--text);font-weight:600;line-height:1.6;}
+.prompt-box{padding:20px 28px;}
+.prompt-label{font-size:12px;font-weight:600;color:var(--text);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:12px;}
+.prompt-tags{display:flex;flex-wrap:wrap;gap:10px;}
+.ptag{font-size:13px;padding:6px 16px;border-radius:100px;border:1px solid var(--border);color:var(--text);background:rgba(255,255,255,0.05);font-weight:600;}
+
+#s4{padding:48px 64px;}
+.two-agents{display:grid;grid-template-columns:1fr 1fr;gap:24px;width:100%;height:calc(100% - 60px);}
+.big-agent{overflow:hidden;display:flex;flex-direction:column;padding:0 !important;}
+.ba-head{padding:28px 32px 20px;border-bottom:1px solid var(--border);}
+.ba-name{font-family:var(--fd);font-size:46px;font-weight:700;letter-spacing:-0.04em;line-height:1;margin-bottom:8px;color:#fff;}
+.ba-role{font-size:15px;color:var(--text);font-weight:600;}
+.ba-co{font-size:14px;color:var(--muted2);margin-top:6px;font-weight:400;}
+.ba-widget{padding:24px 32px;border-bottom:1px solid var(--border); min-height: 130px; display:flex; align-items:center; justify-content:center;}
+.ba-sc{padding:24px 32px;flex:1;}
+.ba-wow{padding:16px 32px;font-size:13px;font-weight:600;}
+
+#s5{padding:40px 56px;}
+.all-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;width:100%;}
+.all-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;width:100%;}
+.acard{overflow:hidden;transition:transform 0.3s,box-shadow 0.3s;padding:0 !important;}
+.acard-sector{display:inline-block;font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:16px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);background:rgba(20,20,20,0.6);color:var(--text) !important;}
+.acard:hover{transform:translateY(-5px);box-shadow:0 15px 40px rgba(0,0,0,0.6) !important;}
+.acard-head{padding:24px 26px 16px;border-bottom:1px solid var(--border);}
+.acard-name{font-family:var(--fd);font-size:26px;font-weight:700;letter-spacing:-0.02em;color:#fff;}
+.acard-role{font-size:14px;color:var(--text);margin-top:6px;font-weight:600;}
+.acard-co{font-size:13px;color:var(--muted2);margin-top:6px;font-weight:400;}
+.acard-widget{padding:20px 26px;border-bottom:1px solid var(--border);}
+.acard-sc{padding:20px 26px;}
+.asc-label{font-size:12px;font-weight:600;color:var(--text);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;}
+.asc-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;}
+.asc-dot{width:5px;height:5px;border-radius:100px;background:var(--accent);margin-top:6px;flex-shrink:0;}
+.asc-text{font-size:13px;color:var(--muted2);line-height:1.5;font-weight:400;}
+.acard-wow{padding:16px 26px;font-size:13px;font-weight:600;}
+
+.tarif-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:48px;width:100%;}
+.tc{padding:40px;position:relative;}
+.tc.feat{border-color:rgba(255,255,255,0.4) !important;background:rgba(30,30,30,0.7) !important;box-shadow:0 0 40px rgba(255,255,255,0.1) !important;}
+.tc-star{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--accent);color:#080808;font-size:12px;font-weight:700;padding:6px 20px;border-radius:100px;white-space:nowrap;letter-spacing:0.05em;box-shadow:0 4px 12px rgba(255,255,255,0.2);}
+.tc-plan{font-size:14px;font-weight:700;color:var(--text);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:14px;}
+.tc-price{font-family:var(--fd);font-size:60px;font-weight:700;letter-spacing:-0.04em;line-height:1;color:#fff;}
+.tc-period{font-size:14px;color:var(--muted2);margin-bottom:28px;margin-top:8px;font-weight:400;}
+.tc-features{list-style:none;}
+.tc-features li{font-size:15px;color:var(--text);padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;font-weight:400;}
+.tc-features li:last-child{border-bottom:none;}
+.tc-features li::before{content:'';width:6px;height:6px;border-radius:100px;background:var(--accent);flex-shrink:0;margin-top:7px;}
+
+/* Pilot block CTA matches 'Try for free' style: Dark pill */
+.pilot-c{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+.pilot-big{font-family:'Silkscreen', monospace !important;font-size:56px;font-weight:400;color:var(--text);letter-spacing:0;line-height:1;margin-bottom:16px;}
+.pilot-label{font-size:18px;font-weight:700;margin-bottom:14px;color:#fff;background:rgba(255,255,255,0.1);padding:6px 20px;border-radius:100px;border:1px solid rgba(255,255,255,0.2);}
+.pilot-desc{font-size:15px;color:var(--muted2);line-height:1.7;font-weight:400;}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- 1 COVER -->
+  <div class="slide" id="s1">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">01 / 08</div>
+    <div class="s1-grid">
+      <div>
+        <div class="s1-tag sc d1">Réunion · 5 avril 2025</div>
+        <h1 class="sc d2">On construit<br>une agence<br><span class="accent">d'agents IA.</span></h1>
+        <p class="lead sc d3">Des agents conversationnels vocaux sur mesure, déployés pour les entreprises en moins de 48h.</p>
+        <div class="sc d4" style="margin-top:28px;">
+          <div class="assoc-row"><div class="assoc-dot" style="background:var(--accent);"></div><strong style="color:var(--text);font-weight:500;">Moi</strong> — Build technique des agents</div>
+          <div class="assoc-row"><div class="assoc-dot" style="background:#6399ff;"></div><strong style="color:var(--text);font-weight:500;">Toi</strong> — Marketing & acquisition</div>
+        </div>
+      </div>
+      <div class="sc d3">
+        <div class="s1-right">
+          <div class="s1-rl">En un coup d'œil</div>
+          <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-val">3</div><div class="kpi-label">Agents démo prêts</div></div>
+            <div class="kpi"><div class="kpi-val">14j</div><div class="kpi-label">Pilote gratuit</div></div>
+            <div class="kpi"><div class="kpi-val">48h</div><div class="kpi-label">Déploiement</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 C'EST QUOI UN AGENT -->
+  <div class="slide" id="s2">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">02 / 08</div>
+    <div class="what-grid">
+      <div>
+        <div class="eyebrow sc d1">La technologie</div>
+        <h2 class="sc d2">Un agent IA,<br>c'est quoi<br><span class="accent">concrètement ?</span></h2>
+        <p class="lead sc d3">Une IA vocale qui répond, qualifie, prend des décisions et escalade — sans humain, 24h/24.</p>
+      </div>
+      <div class="what-right sc d3">
+        <div class="wcard c1">
+          <div class="wcard-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px; opacity:0.9"><path d="M21 15l-4-4V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16z"></path></svg></div>
+          <div class="wcard-title">Conversation vocale naturelle</div>
+          <div class="wcard-desc">L'agent parle, écoute, relance. Il comprend le contexte et adapte ses réponses en temps réel.</div>
+        </div>
+        <div class="wcard c2">
+          <div class="wcard-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px; opacity:0.9"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg></div>
+          <div class="wcard-title">Connaissance métier injectée</div>
+          <div class="wcard-desc">On lui donne les infos de l'entreprise : tarifs, horaires, process, équipes. Il les maîtrise parfaitement.</div>
+        </div>
+        <div class="wcard c3">
+          <div class="wcard-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px; opacity:0.9"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg></div>
+          <div class="wcard-title">Escalade intelligente</div>
+          <div class="wcard-desc">Si la situation dépasse ses compétences, il transfère proprement vers un humain. Zéro client perdu.</div>
+        </div>
+        <div class="wcard c4">
+          <div class="wcard-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px; opacity:0.9"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+          <div class="wcard-title">Déployé en moins de 48h</div>
+          <div class="wcard-desc">Audit → configuration → pilote. Pas de code côté client, pas d'intégration complexe.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 SOPHIE -->
+  <div class="slide" id="s3">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">03 / 08</div>
+    <div class="agent-slide">
+      <div>
+        <div class="as-sector sec-health sc d1">Santé · Déjà déployé</div>
+        <div class="as-name sc d2">Sophie</div>
+        <div class="as-role sc d2">Réceptionniste médicale virtuelle</div>
+        <div class="as-co sc d3">KAP CARE Santé · Centre pluridisciplinaire · Mérignac</div>
+        <div class="sc d3">
+          <div class="sc-label">Testez ces scénarios</div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"Je voudrais un RDV en kinésithérapie"</span></div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"Vous êtes ouverts le samedi ?"</span></div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"Quelles spécialités proposez-vous ?"</span></div>
+        </div>
+      </div>
+      <div class="as-right sc d3">
+        <div class="widget-box">
+          <div class="widget-label">Agent en live — cliquez sur le micro</div>
+          <elevenlabs-convai agent-id="agent_8801kmnc9c81e9b8y28frv16np96" style="width:100%"></elevenlabs-convai>
+        </div>
+        <div class="wow-box">
+          <div class="wow-title">Point fort</div>
+          <div class="wow-text">Tourne 24h/24 — le patient qui appelle un dimanche soir a son RDV confirmé avant lundi matin.</div>
+        </div>
+        <div class="prompt-box">
+          <div class="prompt-label">Configuré avec</div>
+          <div class="prompt-tags">
+            <span class="ptag">Personality</span><span class="ptag">Environment</span><span class="ptag">Tone</span><span class="ptag">Goal</span><span class="ptag">Guardrails</span><span class="ptag">15 disciplines</span><span class="ptag">Voix FR</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 LÉA & MAX -->
+  <div class="slide" id="s4">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">04 / 08</div>
+    <div class="eyebrow sc d1">Agents démo</div>
+    <h2 class="sc d2" style="font-size:clamp(28px,3vw,40px);margin-bottom:20px;">Léa & Max</h2>
+    <div class="two-agents sc d3">
+      <div class="big-agent">
+        <div class="ba-head">
+          <div class="as-sector sec-rh" style="margin-bottom:10px;">RH & Recrutement</div>
+          <div class="ba-name">Léa</div>
+          <div class="ba-role">Assistante RH & pré-qualification</div>
+          <div class="ba-co">TalentHub · Agence de recrutement fictive</div>
+        </div>
+        <div class="ba-widget"><elevenlabs-convai agent-id="agent_9901knebxvrzf7sbv17f8xnp42hq" style="width:100%"></elevenlabs-convai></div>
+        <div class="ba-sc">
+          <div class="sc-label">Testez</div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"Je veux postuler pour un poste commercial"</span></div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"J'ai postulé il y a 3 semaines, aucune réponse"</span></div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"Je suis en poste mais j'explore d'autres options"</span></div>
+        </div>
+        <div class="ba-wow" style="background:rgba(99,153,255,0.05);border-top:1px solid rgba(99,153,255,0.1);color:#6399ff;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; margin-right:6px; vertical-align:-3px;"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9 12 2"></polygon></svg> Zéro appel de tri — recruteurs focalisés sur les profils qualifiés</div>
+      </div>
+      <div class="big-agent">
+        <div class="ba-head">
+          <div class="as-sector sec-sav" style="margin-bottom:10px;">E-commerce · SAV</div>
+          <div class="ba-name">Max</div>
+          <div class="ba-role">Agent SAV & relation client</div>
+          <div class="ba-co">NovaBoutique · Mode en ligne fictive</div>
+        </div>
+        <div class="ba-widget"><elevenlabs-convai agent-id="agent_0801knecadtcfdy9sf53chq2knvc" style="width:100%"></elevenlabs-convai></div>
+        <div class="ba-sc">
+          <div class="sc-label">Testez</div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"Ma commande du 2 avril n'est pas arrivée"</span></div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"Je veux retourner un article, comment faire ?"</span></div>
+          <div class="sc-item"><div class="sc-dot"></div><span class="sc-text">"C'est la 3ème fois que j'ai un problème !"</span></div>
+        </div>
+        <div class="ba-wow" style="background:rgba(255,165,89,0.05);border-top:1px solid rgba(255,165,89,0.1);color:#ffa559;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; margin-right:6px; vertical-align:-3px;"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9 12 2"></polygon></svg> Absorbe 70% des appels en pic — vos agents humains gèrent l'essentiel</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 VUE D'ENSEMBLE -->
+  <div class="slide" id="s5">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">05 / 08</div>
+    <div class="all-header">
+      <div>
+        <div class="eyebrow sc d1">Vue d'ensemble</div>
+        <h2 class="sc d2" style="font-size:clamp(28px,3.5vw,44px);">3 agents.<br>3 secteurs.<br><span class="accent">1 modèle réplicable.</span></h2>
+      </div>
+      <p class="sc d2" style="font-size:13px;color:var(--muted);max-width:240px;text-align:right;line-height:1.7;">Chaque secteur est un template. On l'adapte en 48h pour n'importe quelle entreprise.</p>
+    </div>
+    <div class="all-grid sc d3">
+      <div class="acard">
+        <div class="acard-head">
+          <div class="acard-sector sec-health">Santé</div>
+          <div class="acard-name">Sophie</div>
+          <div class="acard-role">Réceptionniste médicale virtuelle</div>
+          <div class="acard-co">KAP CARE Santé · Mérignac</div>
+        </div>
+        <div class="acard-widget"><elevenlabs-convai agent-id="agent_8801kmnc9c81e9b8y28frv16np96" style="width:100%"></elevenlabs-convai></div>
+        <div class="acard-sc">
+          <div class="asc-label">Testez</div>
+          <div class="asc-item"><div class="asc-dot"></div><span class="asc-text">"Je voudrais un RDV en kinésithérapie"</span></div>
+          <div class="asc-item"><div class="asc-dot"></div><span class="asc-text">"Vous êtes ouverts le samedi ?"</span></div>
+        </div>
+        <div class="acard-wow" style="background:rgba(59,195,150,0.05);border-top:1px solid rgba(59,195,150,0.1);color:#3bc396;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; margin-right:6px; vertical-align:-3px;"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9 12 2"></polygon></svg> RDV pris un dimanche soir — 24h/24</div>
+      </div>
+      <div class="acard">
+        <div class="acard-head">
+          <div class="acard-sector sec-rh">RH & Recrutement</div>
+          <div class="acard-name">Léa</div>
+          <div class="acard-role">Assistante RH & pré-qualification</div>
+          <div class="acard-co">TalentHub · Agence recrutement</div>
+        </div>
+        <div class="acard-widget"><elevenlabs-convai agent-id="agent_9901knebxvrzf7sbv17f8xnp42hq" style="width:100%"></elevenlabs-convai></div>
+        <div class="acard-sc">
+          <div class="asc-label">Testez</div>
+          <div class="asc-item"><div class="asc-dot"></div><span class="asc-text">"Je veux postuler pour un poste commercial"</span></div>
+          <div class="asc-item"><div class="asc-dot"></div><span class="asc-text">"J'ai postulé il y a 3 semaines, aucune réponse"</span></div>
+        </div>
+        <div class="acard-wow" style="background:rgba(99,153,255,0.05);border-top:1px solid rgba(99,153,255,0.1);color:#6399ff;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; margin-right:6px; vertical-align:-3px;"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9 12 2"></polygon></svg> Zéro appel de tri pour les recruteurs</div>
+      </div>
+      <div class="acard">
+        <div class="acard-head">
+          <div class="acard-sector sec-sav">E-commerce · SAV</div>
+          <div class="acard-name">Max</div>
+          <div class="acard-role">Agent SAV & relation client</div>
+          <div class="acard-co">NovaBoutique · Mode en ligne</div>
+        </div>
+        <div class="acard-widget"><elevenlabs-convai agent-id="agent_0801knecadtcfdy9sf53chq2knvc" style="width:100%"></elevenlabs-convai></div>
+        <div class="acard-sc">
+          <div class="asc-label">Testez</div>
+          <div class="asc-item"><div class="asc-dot"></div><span class="asc-text">"Ma commande du 2 avril n'est pas arrivée"</span></div>
+          <div class="asc-item"><div class="asc-dot"></div><span class="asc-text">"C'est la 3ème fois que j'ai un problème !"</span></div>
+        </div>
+        <div class="acard-wow" style="background:rgba(255,165,89,0.05);border-top:1px solid rgba(255,165,89,0.1);color:#ffa559;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; margin-right:6px; vertical-align:-3px;"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9 12 2"></polygon></svg> Absorbe 70% des appels en pic d'activité</div>
+      </div>
+    </div>
+  </div>
+
+  
+  
+  <!-- 6 ET DEMAIN -->
+  <div class="slide" id="s6">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">06 / 08</div>
+    <div class="all-header" style="margin-bottom:20px;">
+      <div>
+        <div class="eyebrow sc d1">Et demain ?</div>
+        <h2 class="sc d2">6 agents<br>en pipeline.</h2>
+      </div>
+      <p class="sc d2" style="font-size:14px;color:var(--muted2);max-width:240px;text-align:right;line-height:1.7;">Chaque secteur est un template. On l'adapte en 48h.</p>
+    </div>
+    <div class="all-grid sc d3" style="grid-template-rows:repeat(2,1fr); gap:16px;">
+      <!-- 1 -->
+      <div class="acard demain-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Clara">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Immobilier</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">Potentiel Élevé</div>
+          </div>
+          <div class="acard-name">Clara</div>
+          <div class="acard-role">Qualification de leads & prise de visite</div>
+        </div>
+        <div class="acard-wow" style="padding:14px 24px;">✦ Lead reçu un vendredi soir → visite planifiée avant lundi matin</div>
+      </div>
+      <!-- 2 -->
+      <div class="acard demain-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Noah">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Restauration</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">Potentiel Élevé</div>
+          </div>
+          <div class="acard-name">Noah</div>
+          <div class="acard-role">Réservation & FAQ restaurant</div>
+        </div>
+        <div class="acard-wow" style="padding:14px 24px;">✦ 0 appel manqué un samedi soir en plein service</div>
+      </div>
+      <!-- 3 -->
+      <div class="acard demain-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Eva">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Juridique</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">Potentiel Élevé</div>
+          </div>
+          <div class="acard-name">Eva</div>
+          <div class="acard-role">Qualification de dossiers entrants</div>
+        </div>
+        <div class="acard-wow" style="padding:14px 24px;">✦ Le cabinet facture plus, consulte moins à perte</div>
+      </div>
+      <!-- 4 -->
+      <div class="acard demain-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Tom">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Automobile</div>
+            <div class="acard-sector" style="color:#f0c68a; background:rgba(240,198,138,0.1); border-color:rgba(240,198,138,0.25);">Potentiel Moyen</div>
+          </div>
+          <div class="acard-name">Tom</div>
+          <div class="acard-role">SAV & prise de RDV garage</div>
+        </div>
+        <div class="acard-wow" style="padding:14px 24px;">✦ Agenda rempli sans standardiste</div>
+      </div>
+      <!-- 5 -->
+      <div class="acard demain-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Iris">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Beauté & bien-être</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">Potentiel Élevé</div>
+          </div>
+          <div class="acard-name">Iris</div>
+          <div class="acard-role">Réservation salon & spa</div>
+        </div>
+        <div class="acard-wow" style="padding:14px 24px;">✦ Marché immense — premier use case envisagé</div>
+      </div>
+      <!-- 6 -->
+      <div class="acard demain-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Sam">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Formation</div>
+            <div class="acard-sector" style="color:#f0c68a; background:rgba(240,198,138,0.1); border-color:rgba(240,198,138,0.25);">Potentiel Moyen</div>
+          </div>
+          <div class="acard-name">Sam</div>
+          <div class="acard-role">Orientation & inscription formation</div>
+        </div>
+        <div class="acard-wow" style="padding:14px 24px;">✦ Taux de conversion leads → inscrits multiplié</div>
+      </div>
+    </div>
+
+    <!-- MODAL OVERLAY -->
+    <div id="demain-modal-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); display:none; justify-content:center; align-items:center; z-index:1000; opacity:0; transition:opacity 0.3s ease-out; backdrop-filter:blur(8px);">
+      <div id="demain-modal-card" style="background:rgba(20,20,20,0.9); border:1px solid rgba(255,255,255,0.13); border-radius:24px; padding:32px; width:100%; max-width:560px; transform:scale(0.92); transition:transform 0.3s ease-out; position:relative; color:var(--text); font-family:var(--fb); box-shadow:0 30px 60px rgba(0,0,0,0.8);">
+        <button id="demain-modal-close" style="position:absolute; top:24px; right:24px; background:none; border:none; color:var(--muted2); font-size:24px; cursor:pointer; padding:4px;">✕</button>
+        <div style="display:flex; gap:12px; margin-bottom:16px;">
+          <div id="m-sector" class="acard-sector" style="margin:0;"></div>
+          <div id="m-badge" class="acard-sector" style="margin:0;"></div>
+        </div>
+        <div id="m-name" style="font-family:var(--fd); font-size:32px; font-weight:800; color:#fff; margin-bottom:4px;"></div>
+        <div id="m-role" style="font-size:16px; color:var(--muted); font-weight:600; margin-bottom:20px;"></div>
+        <div style="height:1px; background:var(--border); margin-bottom:24px;"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:32px;">
+          <div>
+            <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Douleur adressée</div>
+            <div id="m-douleur" style="font-size:14px; color:var(--text); line-height:1.6; font-weight:400;"></div>
+          </div>
+          <div>
+            <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Ce que fait l'agent</div>
+            <ul id="m-actions" style="margin-left:16px; font-size:14px; color:var(--text); line-height:1.6; padding-left:4px; font-weight:400;"></ul>
+          </div>
+        </div>
+        <div id="m-wow" style="padding:16px 20px; background:rgba(255,255,255,0.05); border-radius:14px; border:1px solid var(--border); font-size:14px; font-weight:600; color:#c8f135;"></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- 7 B2B -->
+  <div class="slide" id="s7">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">07 / 08</div>
+    <div class="all-header" style="margin-bottom:20px;">
+      <div>
+        <div class="eyebrow sc d1">B2B & grands comptes</div>
+        <h2 class="sc d2">Des agents pour<br>l'intérieur des entreprises.</h2>
+      </div>
+    </div>
+    <div class="all-grid sc d3" style="grid-template-rows:repeat(2,1fr); gap:16px;">
+      <!-- 1 -->
+      <div class="acard b2b-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Alex">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Productivité</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">ROI: Élevé</div>
+          </div>
+          <div class="acard-name">Alex</div>
+          <div class="acard-role">Synthèse de réunion & compte-rendu automatique</div>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="acard b2b-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Neo">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">IT Support</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">ROI: Élevé</div>
+          </div>
+          <div class="acard-name">Neo</div>
+          <div class="acard-role">Helpdesk IT vocal niveau 1</div>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="acard b2b-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Zoé">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">RH</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">ROI: Élevé</div>
+          </div>
+          <div class="acard-name">Zoé</div>
+          <div class="acard-role">Onboarding collaborateur & FAQ RH</div>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="acard b2b-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Hugo">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Sales</div>
+            <div class="acard-sector" style="color:#a8f08a; background:rgba(168,240,138,0.1); border-color:rgba(168,240,138,0.25);">ROI: Élevé</div>
+          </div>
+          <div class="acard-name">Hugo</div>
+          <div class="acard-role">Coach commercial & préparation d'appels</div>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="acard b2b-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Lena">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Admin</div>
+            <div class="acard-sector" style="color:#f0c68a; background:rgba(240,198,138,0.1); border-color:rgba(240,198,138,0.25);">ROI: Moyen</div>
+          </div>
+          <div class="acard-name">Lena</div>
+          <div class="acard-role">Assistante de direction vocale</div>
+        </div>
+      </div>
+      <!-- 6 -->
+      <div class="acard b2b-btn" style="display:flex; flex-direction:column; cursor:pointer;" data-agent="Max B2B">
+        <div class="acard-head" style="flex:1; padding:20px 24px 12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div class="acard-sector">Knowledge</div>
+            <div class="acard-sector" style="color:#f0c68a; background:rgba(240,198,138,0.1); border-color:rgba(240,198,138,0.25);">ROI: Moyen</div>
+          </div>
+          <div class="acard-name">Max B2B</div>
+          <div class="acard-role">Base de connaissances interne vocale</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL OVERLAY -->
+    <div id="b2b-modal-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); display:none; justify-content:center; align-items:center; z-index:1000; opacity:0; transition:opacity 0.3s ease-out; backdrop-filter:blur(8px);">
+      <div id="b2b-modal-card" style="background:rgba(20,20,20,0.95); border:1px solid rgba(255,255,255,0.13); border-radius:24px; padding:32px; width:100%; max-width:860px; transform:scale(0.92); transition:transform 0.3s ease-out; position:relative; color:var(--text); font-family:var(--fb); box-shadow:0 30px 60px rgba(0,0,0,0.8);">
+        <button id="b2b-modal-close" style="position:absolute; top:24px; right:24px; background:none; border:none; color:var(--muted2); font-size:24px; cursor:pointer; padding:4px;">✕</button>
+        <div style="display:flex; gap:12px; margin-bottom:16px;">
+          <div id="b2b-m-sector" class="acard-sector" style="margin:0;"></div>
+          <div id="b2b-m-badge" class="acard-sector" style="margin:0;"></div>
+        </div>
+        <div id="b2b-m-name" style="font-family:var(--fd); font-size:32px; font-weight:800; color:#fff; margin-bottom:4px;"></div>
+        <div id="b2b-m-role" style="font-size:16px; color:var(--muted); font-weight:600; margin-bottom:20px;"></div>
+        <div style="height:1px; background:var(--border); margin-bottom:24px;"></div>
+        <div style="display:grid; grid-template-columns:35% 61%; gap:32px; margin-bottom:32px;">
+          <div>
+            <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Cas d'usage</div>
+            <div id="b2b-m-douleur" style="font-size:14px; color:var(--text); line-height:1.6; font-weight:400;"></div>
+          </div>
+          <div>
+            <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Stack technique ElevenLabs</div>
+            <pre id="b2b-m-stack" style="background:#0a0a0a; font-family:monospace; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; color:var(--text); font-size:12px; line-height:1.5; overflow-x:auto; white-space:pre-wrap; margin:0;"></pre>
+          </div>
+        </div>
+        <div id="b2b-m-wow" style="padding:16px 20px; background:rgba(255,255,255,0.05); border-radius:14px; border:1px solid var(--border); font-size:14px; font-weight:600; color:#c8f135;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 TARIFS -->
+
+
+  <div class="slide" id="s8">
+    <div class="logo-fixed">Agent<span>AI</span> Studio</div>
+    <div class="snum">08 / 08</div>
+    <div class="eyebrow sc d1">Offre commerciale</div>
+    <h2 class="sc d2">Simple.<br>Transparent.<br><span class="accent">Sans surprise.</span></h2>
+    <div class="tarif-grid sc d3">
+      <div class="tc">
+        <div class="tc-plan">Starter</div>
+        <div class="tc-price">99€</div>
+        <div class="tc-period">par mois · sans engagement</div>
+        <ul class="tc-features">
+          <li>1 agent IA sur mesure</li>
+          <li>1 canal (téléphone ou chat)</li>
+          <li>FAQ + prise de RDV</li>
+          <li>Rapport mensuel d'activité</li>
+          <li>Support email</li>
+        </ul>
+      </div>
+      <div class="tc feat">
+        <div class="tc-star">Le plus populaire</div>
+        <div class="tc-plan">Pro</div>
+        <div class="tc-price">199€</div>
+        <div class="tc-period">par mois · sans engagement</div>
+        <ul class="tc-features">
+          <li>Jusqu'à 3 agents IA</li>
+          <li>Multi-canal (tel + chat + WhatsApp)</li>
+          <li>Escalade humaine configurée</li>
+          <li>Dashboard de performance</li>
+          <li>Support prioritaire 7j/7</li>
+        </ul>
+      </div>
+      <div class="pilot-c">
+        <div class="pilot-big">14j</div>
+        <div class="pilot-label">Pilote gratuit</div>
+        <div class="pilot-desc">Avant tout engagement. En échange d'un retour honnête et d'un témoignage. Offert aux 5 premiers clients du webinaire.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="nav">
+  <button class="nbtn" id="prev">←</button>
+  <div class="nsep"></div>
+  <div style="display:flex;gap:8px;" id="dots"></div>
+  <div class="nsep"></div>
+  <div class="ncount" id="count">1 / 8</div>
+  <div class="nsep"></div>
+  <button class="nbtn" id="next">→</button>
+</nav>
+
+<div class="hint">
+  <span class="kbd">←</span><span class="kbd">→</span>
+  <span style="font-size:11px;color:var(--muted);margin-left:4px;">naviguer</span>
+</div>
+
+<script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+<script>
+const slides=document.querySelectorAll('.slide');
+const deck=document.getElementById('deck');
+const dotsWrap=document.getElementById('dots');
+const countEl=document.getElementById('count');
+let cur=0,total=slides.length,busy=false;
+slides.forEach((_,i)=>{
+  const d=document.createElement('button');
+  d.className='ndot';d.onclick=()=>go(i);
+  dotsWrap.appendChild(d);
+});
+function updateUI(){
+  document.querySelectorAll('.ndot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  countEl.textContent=(cur+1)+' / '+total;
+}
+function activate(i){slides.forEach((s,j)=>s.classList.toggle('on',j===i));}
+function go(i){
+  if(busy||i===cur||i<0||i>=total)return;
+  busy=true;cur=i;
+  deck.style.transform=`translateX(-${cur*100}vw)`;
+  activate(cur);updateUI();
+  setTimeout(()=>{busy=false;},950);
+}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1);
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50){dx<0?go(cur+1):go(cur-1);}},{passive:true});
+activate(0);updateUI();
+
+// Modal Logic for Slide 6
+const agentsData = {
+  'Clara': {
+    sector: 'Immobilier',
+    badge: 'Potentiel Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Qualification de leads & prise de visite',
+    douleur: 'Les agents immobiliers reçoivent des dizaines de demandes de visite chaque semaine. 80% arrivent hors horaires, par formulaire ou téléphone. Sans réponse rapide, le lead part chez un concurrent.',
+    actions: ['Qualifie le projet d\'achat (budget, délai, type de bien)', 'Planifie les visites dans l\'agenda de l\'agent', 'Répond aux questions sur les biens disponibles', 'Escalade les dossiers chauds en priorité'],
+    wow: '✦ Lead reçu un vendredi soir → visite planifiée avant lundi matin'
+  },
+  'Noah': {
+    sector: 'Restauration',
+    badge: 'Potentiel Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Réservation & FAQ restaurant',
+    douleur: 'Le téléphone sonne pendant le service alors que toute l\'équipe est en salle. Les réservations sont ratées, les questions sur les allergies ou les menus restent sans réponse.',
+    actions: ['Prend et confirme les réservations', 'Répond aux questions menu/allergies/horaires', 'Gère les annulations et modifications', 'Redirige vers l\'humain pour les demandes événementielles'],
+    wow: '✦ 0 appel manqué un samedi soir en plein service'
+  },
+  'Eva': {
+    sector: 'Juridique',
+    badge: 'Potentiel Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Qualification de dossiers entrants',
+    douleur: 'Les avocats consacrent jusqu\'à 30% de leur temps à des appels de prospects qui ne correspondent pas à leur spécialité. Chaque appel mal qualifié est du temps de facturation perdu.',
+    actions: ['Identifie la nature du litige et la spécialité requise', 'Évalue l\'urgence et la recevabilité du dossier', 'Planifie les consultations initiales', 'Oriente les cas hors scope vers les bons confrères'],
+    wow: '✦ Le cabinet facture plus, consulte moins à perte'
+  },
+  'Tom': {
+    sector: 'Automobile',
+    badge: 'Potentiel Moyen',
+    badgeColor: '#f0c68a', badgeBg: 'rgba(240,198,138,0.1)', badgeBorder: 'rgba(240,198,138,0.25)',
+    role: 'SAV & prise de RDV garage',
+    douleur: 'Les garages perdent des créneaux d\'entretien faute de réponse téléphonique rapide. Les clients appellent, tombent sur la messagerie, et rappellent un concurrent.',
+    actions: ['Prend les RDV entretien et révision', 'Fournit les devis simples (vidange, pneus, freins)', 'Informe sur le statut des véhicules en cours', 'Gère les rappels de confirmation de RDV'],
+    wow: '✦ Agenda rempli sans standardiste'
+  },
+  'Iris': {
+    sector: 'Beauté & bien-être',
+    badge: 'Potentiel Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Réservation salon & spa',
+    douleur: 'Salons de coiffure, instituts et spas gèrent encore 70% de leurs réservations par téléphone. Une ligne occupée = un client perdu. Et personne ne décroche entre deux clients.',
+    actions: ['Prend les réservations par prestation et praticien', 'Gère les annulations et reports', 'Répond aux questions tarifaires et disponibilités', 'Envoie des rappels de RDV automatiques'],
+    wow: '✦ Marché immense — premier use case envisagé'
+  },
+  'Sam': {
+    sector: 'Formation',
+    badge: 'Potentiel Moyen',
+    badgeColor: '#f0c68a', badgeBg: 'rgba(240,198,138,0.1)', badgeBorder: 'rgba(240,198,138,0.25)',
+    role: 'Orientation & inscription formation',
+    douleur: 'Les organismes de formation reçoivent des centaines de demandes d\'informations par mois. La plupart ne sont pas qualifiées. Les conseillers perdent leur temps sur des prospects non matures.',
+    actions: ['Qualifie le projet de formation (objectif, niveau, financement)', 'Oriente vers les bonnes formations du catalogue', 'Informe sur les modalités CPF/OPCO', 'Planifie un entretien avec un conseiller humain'],
+    wow: '✦ Taux de conversion leads → inscrits multiplié'
+  }
+};
+
+const dModal = document.getElementById('demain-modal-overlay');
+const dCard = document.getElementById('demain-modal-card');
+const dClose = document.getElementById('demain-modal-close');
+
+if(dModal && dCard && dClose) {
+  document.querySelectorAll('.demain-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const data = agentsData[btn.dataset.agent];
+      document.getElementById('m-sector').textContent = data.sector;
+      document.getElementById('m-badge').textContent = data.badge;
+      document.getElementById('m-badge').style.color = data.badgeColor;
+      document.getElementById('m-badge').style.background = data.badgeBg;
+      document.getElementById('m-badge').style.borderColor = data.badgeBorder;
+      document.getElementById('m-name').textContent = btn.dataset.agent;
+      document.getElementById('m-role').textContent = data.role;
+      document.getElementById('m-douleur').textContent = data.douleur;
+      
+      const ul = document.getElementById('m-actions');
+      ul.innerHTML = '';
+      data.actions.forEach(act => {
+        const li = document.createElement('li');
+        li.style.marginBottom = '6px';
+        li.textContent = act;
+        ul.appendChild(li);
+      });
+      
+      document.getElementById('m-wow').textContent = data.wow;
+      
+      dModal.style.display = 'flex';
+      // trigger reflow
+      void dModal.offsetWidth;
+      dModal.style.opacity = '1';
+      dCard.style.transform = 'scale(1)';
+    });
+  });
+
+  function closeDModal() {
+    dModal.style.opacity = '0';
+    dCard.style.transform = 'scale(0.92)';
+    setTimeout(() => { dModal.style.display = 'none'; }, 300);
+  }
+
+  dClose.addEventListener('click', closeDModal);
+  dModal.addEventListener('click', (e) => {
+    if(e.target === dModal) closeDModal();
+  });
+}
+
+
+// Modal Logic for Slide 7 B2B
+const b2bAgentsData = {
+  'Alex': {
+    sector: 'Productivité', badge: 'ROI: Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Synthèse de réunion & compte-rendu automatique',
+    douleur: 'Les cadres passent 30% de leur temps en réunion et 20% à rédiger des CRs. Alex écoute en temps réel, synthétise les décisions, extrait les action items et envoie le CR en moins de 2 min après la réunion.',
+    stack: `Modèle LLM    : gemini-2.0-flash
+Langue        : fr
+Temperature   : 0.20 (synthèse structurée)
+Stability     : 0.65
+Similarity    : 0.80
+Prompt struct : Personality · Environment · Goal · Guardrails
+Intégrations  : Zoom API · Teams · Google Calendar · Notion
+Canaux        : Réunion live · Webhook post-call`,
+    wow: '✦ CR envoyé à toute l\'équipe 2 min après la réunion'
+  },
+  'Neo': {
+    sector: 'IT Support', badge: 'ROI: Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Helpdesk IT vocal niveau 1',
+    douleur: '60 à 70% des tickets IT sont des demandes niveau 1 (reset mdp, accès VPN, imprimante). Neo les résout seul et escalade uniquement les cas complexes aux techniciens humains.',
+    stack: `Modèle LLM    : gemini-2.0-flash
+Langue        : fr
+Temperature   : 0.05 (réponses très procédurales)
+Stability     : 0.80 (voix calme et rassurante)
+Similarity    : 0.75
+Prompt struct : Environment · Goal · Guardrails stricts
+Intégrations  : JIRA · ServiceNow · Active Directory
+Canaux        : Téléphone interne · Chat Teams`,
+    wow: '✦ -65% de tickets niveau 1 traités par des humains'
+  },
+  'Zoé': {
+    sector: 'RH', badge: 'ROI: Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Onboarding collaborateur & FAQ RH',
+    douleur: 'Les nouveaux arrivants posent les mêmes 50 questions RH pendant leurs 3 premiers mois. Zoé répond 24h/24 sur les procédures, congés, outils, avantages — et libère les RH.',
+    stack: `Modèle LLM    : gemini-2.0-flash
+Langue        : fr
+Temperature   : 0.30 (chaleureux mais cadré)
+Stability     : 0.60
+Similarity    : 0.80
+Prompt struct : Personality · Environment · Tone · Goal
+Intégrations  : SIRH · Confluence · SharePoint · Notion
+Canaux        : Chat interne · Téléphone · Slack`,
+    wow: '✦ time-to-productivity réduit de 30%'
+  },
+  'Hugo': {
+    sector: 'Sales', badge: 'ROI: Élevé',
+    badgeColor: '#a8f08a', badgeBg: 'rgba(168,240,138,0.1)', badgeBorder: 'rgba(168,240,138,0.25)',
+    role: 'Coach commercial & préparation d\'appels',
+    douleur: 'Les commerciaux manquent de préparation avant les appels clients. Hugo brief le commercial en 2 min sur le prospect, anticipe les objections probables et debrief après l\'appel pour progresser.',
+    stack: `Modèle LLM    : gemini-2.0-flash
+Langue        : fr
+Temperature   : 0.50 (dynamique, coaching actif)
+Stability     : 0.55
+Similarity    : 0.80
+Prompt struct : Personality · Goal · Tone énergique
+Intégrations  : Salesforce · HubSpot · LinkedIn Sales Nav
+Canaux        : Téléphone · WhatsApp Business · Slack`,
+    wow: '✦ taux de closing +18% sans formation supplémentaire'
+  },
+  'Lena': {
+    sector: 'Admin', badge: 'ROI: Moyen',
+    badgeColor: '#f0c68a', badgeBg: 'rgba(240,198,138,0.1)', badgeBorder: 'rgba(240,198,138,0.25)',
+    role: 'Assistante de direction vocale',
+    douleur: 'Les assistantes de direction passent 40% de leur temps sur des tâches répétitives. Lena planifie les réunions, confirme les RDV, filtre les demandes entrantes et relance les actions en cours.',
+    stack: `Modèle LLM    : gemini-2.0-flash
+Langue        : fr
+Temperature   : 0.25 (précis, efficace)
+Stability     : 0.70
+Similarity    : 0.80
+Prompt struct : Environment · Goal · Guardrails
+Intégrations  : Google Workspace · Outlook · Calendly
+Canaux        : Téléphone · Email voice-to-text · Teams`,
+    wow: '✦ 3h/jour récupérées par dirigeant'
+  },
+  'Max B2B': {
+    sector: 'Knowledge', badge: 'ROI: Moyen',
+    badgeColor: '#f0c68a', badgeBg: 'rgba(240,198,138,0.1)', badgeBorder: 'rgba(240,198,138,0.25)',
+    role: 'Base de connaissances interne vocale',
+    douleur: 'Les employés cherchent constamment des infos dans des intranets mal organisés. Max B2B répond vocalement aux questions sur les procédures, politiques RH, outils internes et processus métier.',
+    stack: `Modèle LLM    : gemini-2.0-flash
+Langue        : fr
+Temperature   : 0.10 (réponses factuelles uniquement)
+Stability     : 0.75
+Similarity    : 0.80
+Prompt struct : Environment · Goal · Guardrails très stricts
+Intégrations  : Notion · Confluence · SharePoint · Guru
+Canaux        : Chat interne · Téléphone · Slack`,
+    wow: '✦ -40% de questions répétitives adressées aux équipes'
+  }
+};
+
+const b2bModal = document.getElementById('b2b-modal-overlay');
+const b2bCard = document.getElementById('b2b-modal-card');
+const b2bClose = document.getElementById('b2b-modal-close');
+
+if(b2bModal && b2bCard && b2bClose) {
+  document.querySelectorAll('.b2b-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const data = b2bAgentsData[btn.dataset.agent];
+      document.getElementById('b2b-m-sector').textContent = data.sector;
+      document.getElementById('b2b-m-badge').textContent = data.badge;
+      document.getElementById('b2b-m-badge').style.color = data.badgeColor;
+      document.getElementById('b2b-m-badge').style.background = data.badgeBg;
+      document.getElementById('b2b-m-badge').style.borderColor = data.badgeBorder;
+      document.getElementById('b2b-m-name').textContent = btn.dataset.agent;
+      document.getElementById('b2b-m-role').textContent = data.role;
+      document.getElementById('b2b-m-douleur').textContent = data.douleur;
+      document.getElementById('b2b-m-stack').textContent = data.stack;
+      document.getElementById('b2b-m-wow').textContent = data.wow;
+      
+      b2bModal.style.display = 'flex';
+      void b2bModal.offsetWidth;
+      b2bModal.style.opacity = '1';
+      b2bCard.style.transform = 'scale(1)';
+    });
+  });
+
+  function closeB2BModal() {
+    b2bModal.style.opacity = '0';
+    b2bCard.style.transform = 'scale(0.92)';
+    setTimeout(() => { b2bModal.style.display = 'none'; }, 300);
+  }
+
+  b2bClose.addEventListener('click', closeB2BModal);
+  b2bModal.addEventListener('click', (e) => {
+    if(e.target === b2bModal) closeB2BModal();
+  });
+}
+
+</script>
+</body>
+</html>
